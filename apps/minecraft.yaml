@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: mc.opscore.dev
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 25565
+      targetPort: 25565
+  selector:
+    app: minecraft
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minecraft
+spec:
+  serviceName: "minecraft"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft
+  template:
+    metadata:
+      labels:
+        app: minecraft
+    spec:
+      containers:
+      - name: minecraft
+        image: itzg/minecraft-server
+        env:
+          - name: EULA
+            value: "TRUE"
+          - name: TYPE
+            value: "PAPER"
+          - name: MEMORY
+            value: "8192M"
+          - name: MAX_PLAYERS
+            value: "4"
+          - name: ONLINE_MODE
+            value: "false"
+          - name: USE_AIKAR_FLAGS
+            value: "true"
+          - name: USE_MEOWICE_FLAGS
+            value: "true"
+          - name: TZ
+            value: "Europe/Riga"
+          - name: DIFFICULTY
+            value: "2"
+          - name: OPS
+            value: "NATO66613"
+          - name: ENABLE_WHITELIST
+            value: "true"
+          - name: WHITELIST
+            value: |
+              NATO66613
+              PlayerTwo
+        resources:
+          requests:
+            memory: "8Gi"
+            cpu: "2"
+          limits:
+            memory: "10Gi"
