@@ -68,3 +68,27 @@ spec:
             cpu: "2"
           limits:
             memory: "10Gi"
+        volumeMounts:
+        - name: minecraft-data
+          mountPath: /data
+        livenessProbe:
+          exec:
+            command:
+            - mc-health
+          initialDelaySeconds: 120
+          periodSeconds: 60
+        readinessProbe:
+          exec:
+            command:
+            - mc-health
+          initialDelaySeconds: 60
+          periodSeconds: 10
+  volumeClaimTemplates:
+  - metadata:
+      name: minecraft-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "standard-rwo"
+      resources:
+        requests:
+          storage: 10Gi
