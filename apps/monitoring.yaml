@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: *
+    helm:
+      values: |
+        grafana:
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+               external-dns.alpha.kubernetes.io/hostname: "grafana.opscore.dev"
+               cert-manager.io/cluster-issuer: "letsencrypt-prod"
+            hosts:
+              - "grafana.opscore.dev"
+            tls:
+              - secretName: grafana-opscore-dev-tls
+                hosts:
+                  - grafana.opscore.dev
+            path: /
+          adminPassword: "admin"
+          persistence:
+            enabled: true
+            size: 10Gi
+        prometheus:
+          prometheusSpec:
+            serviceMonitorSelectorNilUsesHelmValues: false
+            serviceMonitorSelector: {}
+            serviceMonitorNamespaceSelector: {}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

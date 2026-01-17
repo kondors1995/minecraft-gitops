@@ -13,6 +13,40 @@ spec:
   selector:
     app: minecraft
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft-metrics
+  labels:
+    app: minecraft
+    component: metrics
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: metrics
+  selector:
+    app: minecraft
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: minecraft-monitor
+  labels:
+    release: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: minecraft
+      component: metrics
+  endpoints:
+  - port: metrics
+    interval: 15s
+    metricRelabelings:
+    - sourceLabels: [pod]
+      targetLabel: server
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -83,6 +117,17 @@ spec:
             - mc-health
           initialDelaySeconds: 60
           periodSeconds: 10
+      - name: mc-monitor
+        image: itzg/mc-monitor
+        args: ["export-for-prometheus"]
+        env:
+          - name: EXPORT_SERVERS
+            value: "localhost"
+          - name: SERVER_PORT
+            value: "25565"
+        ports:
+          - containerPort: 8080
+            name: metrics
   volumeClaimTemplates:
   - metadata:
       name: minecraft-data
