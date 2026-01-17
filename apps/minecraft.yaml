@@ -51,13 +51,19 @@ spec:
           - name: DIFFICULTY
             value: "2"
           - name: OPS
-            value: "NATO66613"
+            value: |
+              NATO66613
+              PlayerTwo
+          - name: EXISTING_OPS_FILE
+            value: "SYNCHRONIZE"
           - name: ENABLE_WHITELIST
             value: "true"
           - name: WHITELIST
             value: |
               NATO66613
               PlayerTwo
+          - name: EXISTING_WHITELIST_FILE
+            value: "SYNCHRONIZE"
         resources:
           requests:
             memory: "8Gi"
