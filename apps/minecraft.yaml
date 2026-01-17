@@ -42,8 +42,6 @@ spec:
             value: "4"
           - name: ONLINE_MODE
             value: "true"
-          - name: USE_AIKAR_FLAGS
-            value: "true"
           - name: USE_MEOWICE_FLAGS
             value: "true"
           - name: TZ
