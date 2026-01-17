@@ -53,7 +53,7 @@ spec:
           - name: OPS
             value: |
               NATO66613
-              PlayerTwo
+              kammilka
           - name: EXISTING_OPS_FILE
             value: "SYNCHRONIZE"
           - name: ENABLE_WHITELIST
@@ -61,7 +61,7 @@ spec:
           - name: WHITELIST
             value: |
               NATO66613
-              PlayerTwo
+              kammilka
           - name: EXISTING_WHITELIST_FILE
             value: "SYNCHRONIZE"
         resources:
